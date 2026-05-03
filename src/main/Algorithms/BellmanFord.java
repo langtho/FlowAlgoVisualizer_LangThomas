@@ -15,7 +15,7 @@ public class BellmanFord extends MinCostFlowSolver {
 
         notifyMajor("Cycle-Canceling Initialization",
                 "Based on a MaxFlow (FordFulkerson). We will now search for negative cost cycles to reduce the total cost.",
-                "-", "-", "-");
+                "-", "-", "-",false);
 
         while (true) {
             graph.clearVisuals();
@@ -24,14 +24,15 @@ public class BellmanFord extends MinCostFlowSolver {
 
             notifyMajor("Searching for Negative Cycles",
                     "Looking for cycles where the sum of costs is less than zero (cost < 0).",
-                    "-", "-", "-");
+                    "-", "-", "-",false);
 
             int cycleStartNode = findNegativeCycle(parent, edgeIdx);
 
             if (cycleStartNode == -1) {
+                main.Algorithms.MinCutCalc.findMinCut(graph);
                 notifyMajor("Optimization Finished",
                         "No negative cycles remain in the residual graph. Final Total Cost: $" + graph.calculateCurrentTotalCost(),
-                        "-", "-", "-");
+                        "-", "-", "-",true);
                 break;
             }
 
@@ -40,14 +41,14 @@ public class BellmanFord extends MinCostFlowSolver {
             String cycleData = formatAndHighlightDetectedCycle(cycleStartNode, parent, edgeIdx);
             notifyMajor("Negative Cycle Detected!",
                     "A negative cycle found. Pushing " + flow + " units.",
-                    String.valueOf(flow), "-", cycleData);
+                    String.valueOf(flow), "-", cycleData,false);
 
             augmentCycleFlow(cycleStartNode, parent, edgeIdx, flow);
             totalCost = graph.calculateCurrentTotalCost();
 
             notifyMajor("Cost Optimization Result",
                     "Flow has been re-routed. The new optimized Total Cost is: $" + totalCost,
-                    "-", "-", "-");
+                    "-", "-", "-",false);
         }
         return totalCost;
     }
@@ -69,7 +70,7 @@ public class BellmanFord extends MinCostFlowSolver {
 
             notifyMinor("Relaxation Pass " + (i + 1),
                     loopExplanation,
-                    "-", "-",formatDistances(dist));
+                    "-", "-",formatDistances(dist),false);
 
             for (int u = 0; u < n; u++) {
                 graph.activeNode = u;
@@ -94,7 +95,7 @@ public class BellmanFord extends MinCostFlowSolver {
                                             "Math: " + mathExplanation + "\n" +
                                             "New relative cost: " + dist[e.dest_node],
                                     "-", u + "->" + e.dest_node,
-                                    "Path: " + currentPath + "\n\n" + formatDistances(dist));
+                                    "Path: " + currentPath + "\n\n" + formatDistances(dist),false);
 
                             if (i == n - 1) {
                                 lastUpdatedNode = e.dest_node;
@@ -137,7 +138,7 @@ public class BellmanFord extends MinCostFlowSolver {
 
             notifyMinor("Re-routing Flow",
                     "Sending " + flow + " cost through " + p + " -> " + curr + ". This edge has a cost of " + e.cost + " per unit.",
-                    "-", "-","");
+                    "-", "-","",false);
 
             e.flow += flow;
             graph.adj[curr].get(e.reverse).flow -= flow;

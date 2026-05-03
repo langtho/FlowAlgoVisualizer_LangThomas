@@ -49,7 +49,7 @@ public abstract class MinCostFlowSolver {
         }
     }
 
-    protected void notifyMajor(String title, String explanation, String bottle, String bottleEdge, String path) {
+    protected void notifyMajor(String title, String explanation, String bottle, String bottleEdge, String path, boolean minCutR ) {
         if (listener != null) {
             listener.onStep(title, true);
 
@@ -58,11 +58,12 @@ public abstract class MinCostFlowSolver {
 
             ((AlgorithmController)listener).updateExplanation(title, explanation);
             ((AlgorithmController)listener).updateInfo(flow, cost, bottle, bottleEdge, path);
-            ((AlgorithmController)listener).updateVisuals(null, explanation, flow, bottle, bottleEdge, "-", false);
+            ((AlgorithmController)listener).updateVisuals(null, explanation, flow, bottle, bottleEdge, "-", minCutR);
+
         }
     }
 
-    protected void notifyMinor(String subTitle, String explanation, String bottle, String bottleEdge,String path) {
+    protected void notifyMinor(String subTitle, String explanation, String bottle, String bottleEdge,String path,boolean minCutR) {
         if (listener != null) {
             listener.onStep(subTitle, false);
 
@@ -71,7 +72,7 @@ public abstract class MinCostFlowSolver {
 
             ((AlgorithmController)listener).updateExplanation(subTitle, explanation);
             ((AlgorithmController)listener).updateInfo(flow, cost, bottle, bottleEdge, path);
-            ((AlgorithmController)listener).updateVisuals(null, explanation, flow, bottle, bottleEdge, path, false);
+            ((AlgorithmController)listener).updateVisuals(null, explanation, flow, bottle, bottleEdge, path, minCutR);
         }
     }
 }

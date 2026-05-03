@@ -18,7 +18,7 @@ public class FloydWarshall extends MinCostFlowSolver {
 
         notifyMajor("Floyd-Warshall Initialization",
                 "Based on a MaxFlow. We will now search for negative cost cycles using the Floyd-Warshall All-Pairs shortest path matrix.",
-                "-", "-", "-");
+                "-", "-", "-",false);
 
         while (true) {
             graph.clearVisuals();
@@ -49,14 +49,14 @@ public class FloydWarshall extends MinCostFlowSolver {
 
             notifyMajor("Computing All-Pairs Paths",
                     "The algorithm iteratively checks if passing through an intermediate node 'k' offers a shorter path between nodes 'i' and 'j'.",
-                    "-", "-", "-");
+                    "-", "-", "-",false);
 
             for (int k = 0; k < n; k++) {
                 graph.activeNode = k;
                 String matrixString = formatMatrix(dist);
                 notifyMinor("Pivot Node: " + k,
                         "Updating matrix entries using node " + k + " as a potential bridge.",
-                        "-", "-", matrixString);
+                        "-", "-", matrixString,false);
 
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
@@ -73,7 +73,7 @@ public class FloydWarshall extends MinCostFlowSolver {
 
             notifyMinor("Final Diagonal Inspection",
                     "We check the diagonal (dist[i][i]). If any value is < 0, a negative cycle exists because a node found a 'shortcut' to itself.",
-                    "-", "-", formatMatrix(dist));
+                    "-", "-", formatMatrix(dist),false);
 
             int cycleStartNode = -1;
             for (int i = 0; i < n; i++) {
@@ -84,9 +84,10 @@ public class FloydWarshall extends MinCostFlowSolver {
             }
 
             if (cycleStartNode == -1) {
+                main.Algorithms.MinCutCalc.findMinCut(graph);
                 notifyMajor("Optimization Finished",
                         "All diagonal values are >= 0. No negative cycles remain. Final Total Cost: $" + graph.calculateCurrentTotalCost(),
-                        "-", "-", formatMatrix(dist));
+                        "-", "-", formatMatrix(dist),true);
                 break;
             }
 
@@ -131,13 +132,13 @@ public class FloydWarshall extends MinCostFlowSolver {
             String cyclePathAndMatrix = sb.toString() + "\n\n" + formatMatrix(dist);
 
             notifyMajor("Negative Cycle Detected!",
-                    "Node " + cycleStartNode + " has a diagonal < 0. We can reduce total cost by pushing " + flow + " units of flow.", String.valueOf(flow), "-", cyclePathAndMatrix);
+                    "Node " + cycleStartNode + " has a diagonal < 0. We can reduce total cost by pushing " + flow + " units of flow.", String.valueOf(flow), "-", cyclePathAndMatrix,false);
 
             for (Edge e : cycleEdges) {
 
                 notifyMinor("Re-routing Flow",
                         "Sending " + flow + " cost through " + e.source_node + " -> " + e.dest_node + ". Cost: " + e.cost + " per unit.",
-                        "-", "-", cyclePathAndMatrix);
+                        "-", "-", cyclePathAndMatrix,false);
                 e.isPath = false;
                 e.flow += flow;
                 graph.adj[e.dest_node].get(e.reverse).flow -= flow;
@@ -146,7 +147,7 @@ public class FloydWarshall extends MinCostFlowSolver {
             totalCost = graph.calculateCurrentTotalCost();
             notifyMajor("Cost Optimization Result",
                     "Flow has been re-routed. The new optimized Total Cost is: $" + totalCost,
-                    "-", "-",cyclePathAndMatrix);
+                    "-", "-",cyclePathAndMatrix,false);
         }
 
         graph.activeNode = -1;

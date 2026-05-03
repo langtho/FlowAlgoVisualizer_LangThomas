@@ -21,7 +21,7 @@ public class Dijkstra extends MinCostFlowSolver {
         Arrays.fill(potential, 0);
         notifyMajor("Initialization: Node Potentials",
                 "Dijkstra requires all edge costs to be non-negative. We initialize Node Potentials to 0.",
-                "-", "-", "Potentials: " + Arrays.toString(potential));
+                "-", "-", "Potentials: " + Arrays.toString(potential),false);
 
         while (true) {
             graph.clearVisuals();
@@ -31,12 +31,13 @@ public class Dijkstra extends MinCostFlowSolver {
 
             notifyMajor("Searching for Cheapest Path",
                     "Running Dijkstra on the residual graph. To handle potential negative costs from back-edges, we use 'Reduced Costs' (c_new = c + p_u - p_v) to keep all values >= 0.",
-                    "-", "-", "-");
+                    "-", "-", "-",false);
 
             if (!runDijkstra(graph.source, graph.sink, dist, parent, edgeIdx)) {
+                main.Algorithms.MinCutCalc.findMinCut(graph);
                 notifyMajor("Algorithm Finished",
                         "No more augmenting paths exist. The current flow is optimized for both volume and cost. Final Total Cost: $" + totalCost,
-                        "-", "-", "FINAL MAX FLOW REACHED");
+                        "-", "-", "FINAL MAX FLOW REACHED",true);
                 break;
             }
 
@@ -50,14 +51,14 @@ public class Dijkstra extends MinCostFlowSolver {
 
             notifyMajor("Cheapest Path Found!",
                     "We can send " + flow + " units through this path.",
-                    String.valueOf(flow), "-", pathData + "\n\n" + formatDistancesAndPotentials(dist));
+                    String.valueOf(flow), "-", pathData + "\n\n" + formatDistancesAndPotentials(dist),false);
 
             // Use the local custom augment method to keep edges highlighted and show updates
             totalCost += augmentDijkstraFlow(parent, edgeIdx, flow, pathData + "\n\n" + formatDistancesAndPotentials(dist));
 
             notifyMajor("Flow Updated",
                     "The flow has been pushed. The residual graph is updated. Current Total Cost: $" + totalCost,
-                    "-", "-", pathData + "\n\n" + formatDistancesAndPotentials(dist));
+                    "-", "-", pathData + "\n\n" + formatDistancesAndPotentials(dist),false);
         }
         return totalCost;
     }
@@ -77,7 +78,7 @@ public class Dijkstra extends MinCostFlowSolver {
             graph.activeNode = top.u;
             notifyMinor("Visiting Node " + top.u,
                     "This node is currently the closest unvisited node with a 'Reduced Distance' of " + top.d + ". We will inspect its neighbors.",
-                    "-", "-", formatDistancesAndPotentials(dist));
+                    "-", "-", formatDistancesAndPotentials(dist),false);
 
             for (int i = 0; i < graph.adj[top.u].size(); i++) {
                 Edge e = graph.adj[top.u].get(i);
@@ -91,7 +92,7 @@ public class Dijkstra extends MinCostFlowSolver {
 
                     notifyMinor("Inspecting Edge " + top.u + " -> " + e.dest_node,
                             "Normalizing the cost: " + mathFormula + ". Because of our potentials, this result is guaranteed to be >= 0.",
-                            "-", top.u + "->" + e.dest_node, formatDistancesAndPotentials(dist));
+                            "-", top.u + "->" + e.dest_node, formatDistancesAndPotentials(dist),false);
 
                     if (dist[e.dest_node] > dist[top.u] + reducedCost) {
                         int oldDist = dist[e.dest_node];
@@ -109,11 +110,11 @@ public class Dijkstra extends MinCostFlowSolver {
                                         "Math: " + mathExplanation + "\n" +
                                         "Updated total reduced distance: " + dist[e.dest_node],
                                 "-", top.u + "->" + e.dest_node,
-                                "Path: " + currentPath + "\n\n" + formatDistancesAndPotentials(dist));
+                                "Path: " + currentPath + "\n\n" + formatDistancesAndPotentials(dist),false);
                     } else {
                         notifyMinor("Path Ignored",
                                 "The existing path to Node " + e.dest_node + " is cheaper than going through Node " + top.u + ".",
-                                "-", "-", formatDistancesAndPotentials(dist));
+                                "-", "-", formatDistancesAndPotentials(dist),false);
                     }
 
                     graph.clearVisuals();
@@ -133,7 +134,7 @@ public class Dijkstra extends MinCostFlowSolver {
         }
         notifyMinor("Updating Node Potentials",
                 "We add the calculated shortest path distances to the current node potentials. This re-levels the network altitudes, ensuring that all costs remain non-negative for the next iteration.",
-                "-", "-", "New Potentials:\n" + Arrays.toString(potential));
+                "-", "-", "New Potentials:\n" + Arrays.toString(potential),false);
     }
 
 
@@ -146,7 +147,7 @@ public class Dijkstra extends MinCostFlowSolver {
 
             notifyMinor("Re-routing Flow",
                     "Sending " + flow + " units through " + p + " -> " + curr + ". Real cost: " + e.cost + " per unit.",
-                    "-", "-", displayData);
+                    "-", "-", displayData,false);
 
             e.isPath = false;
 
