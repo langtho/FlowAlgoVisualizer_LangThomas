@@ -16,6 +16,11 @@ public class MainController {
     public MainController() {
         try {
             currentGraph = HelperClass.loadGraph("Graphs/g1.txt");
+        } catch (Exception e) {
+            System.out.println("Default graph not found. Starting with empty workspace.");
+            currentGraph = null;
+        }
+        try {
             window = new AppWindow(currentGraph);
 
             Runnable initialAlgo = this::runFordFulkerson;
@@ -56,6 +61,11 @@ public class MainController {
     }
 
     private void switchAlgorithm(String algoName, boolean isDijkstraMode, Runnable solverLogic) {
+        if (currentGraph == null) {
+            JOptionPane.showMessageDialog(window, "Please load a graph first.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         window.getHeadPanel().setAlgorithmName(algoName);
         algoController.setDijkstraMode(isDijkstraMode);
 
@@ -70,13 +80,14 @@ public class MainController {
     }
 
     private void runFordFulkerson() {
+        if (currentGraph == null) return;
         Ford_Fulkerson solver = new Ford_Fulkerson(currentGraph);
         if (algoController != null) solver.setListener(algoController);
         solver.run();
     }
 
     private void runBellmanFord() {
-        // Run silently to get initial Max Flow
+        if (currentGraph == null) return;
         Ford_Fulkerson initialSolver = new Ford_Fulkerson(currentGraph);
         initialSolver.run();
 
@@ -88,13 +99,14 @@ public class MainController {
     }
 
     private void runDijkstra() {
+        if (currentGraph == null) return;
         Dijkstra solver = new Dijkstra(currentGraph);
         if (algoController != null) solver.setListener(algoController);
         solver.solve();
     }
 
     private void runFloydWarshall() {
-        // Run silently to get initial Max Flow
+        if (currentGraph == null) return;
         Ford_Fulkerson initialSolver = new Ford_Fulkerson(currentGraph);
         initialSolver.run();
 

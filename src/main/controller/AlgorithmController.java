@@ -159,7 +159,10 @@ public class AlgorithmController implements StepListener {
 
         history.clear();
         engine.reset();
-        painter.getGraph().resetAllFlows();
+        if (painter != null && painter.getGraph() != null) {
+            painter.getGraph().resetAllFlows();
+            painter.getGraph().clearVisuals();
+        }
 
         this.lastTitle = "Initialisation";
         this.lastSub = "Ready...";

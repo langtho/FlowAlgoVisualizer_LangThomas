@@ -21,7 +21,10 @@ public class AppWindow extends JFrame {
         explanationPanel = new ExplanationPanel();
         infoPanel = new InfoPanel();
 
-        Layout layout = new Layout(initialGraph, 900, 800);
+        Layout layout = null;
+        if (initialGraph != null) {
+            layout = new Layout(initialGraph, 900, 800);
+        }
         painter = new GraphPainter(initialGraph, layout);
 
         JPanel northContainer = new JPanel(new BorderLayout());
